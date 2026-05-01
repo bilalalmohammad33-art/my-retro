@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retro Spacetoon — تلفاز سبيس تون الكلاسيكي</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Orbitron:wght@400;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --pink:#ff2d78; --cyan:#00f5ff; --yellow:#ffe600; --dark:#03000c; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{min-height:100%;background:var(--dark);font-family:'Tajawal',sans-serif;color:var(--cyan);overflow-x:hidden;}
+
+  /* scanlines */
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.13) 2px,rgba(0,0,0,0.13) 4px);pointer-events:none;z-index:9999;}
+  body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,45,120,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,45,120,0.03) 1px,transparent 1px);background-size:52px 52px;pointer-events:none;z-index:0;}
+
+  header{position:relative;z-index:10;text-align:center;padding:2rem 1rem 0.3rem;}
+  .logo-en{font-family:'Orbitron',sans-serif;font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:900;letter-spacing:0.1em;color:#fff;text-shadow:0 0 8px var(--cyan),0 0 28px var(--cyan),0 0 65px var(--cyan);display:block;animation:flicker 6s infinite;}
+  .logo-ar{font-family:'Tajawal',sans-serif;font-size:clamp(1.2rem,3.5vw,2.4rem);font-weight:900;color:var(--pink);text-shadow:0 0 10px var(--pink),0 0 30px var(--pink);display:block;margin-top:-0.15em;animation:flicker 6s .5s infinite;}
+  @keyframes flicker{0%,93%,100%{opacity:1;}94%{opacity:.6;}96%{opacity:1;}98%{opacity:.3;}99%{opacity:1;}}
+
+  .ticker-wrap{position:relative;z-index:10;overflow:hidden;background:var(--pink);margin:1rem 0 0;padding:5px 0;box-shadow: 0 0 15px var(--pink);}
+  .ticker-inner{display:flex;gap:3rem;white-space:nowrap;animation:ticker 32s linear infinite;}
+  .ticker-inner span{font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.15em;color:#000;flex-shrink:0;}
+  @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  .page{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;padding:3rem 1rem;}
+
+  /* TV */
+  .tv-shell{width:100%;max-width:880px;}
+  .tv-body{background:#0c001e;border-radius:20px 20px 24px 24px;border:3px solid var(--cyan);padding:16px 16px 68px;position:relative;box-shadow:0 0 40px rgba(0,245,255,.22),0 0 90px rgba(0,245,255,.07),0 16px 70px rgba(0,0,0,.95);}
+  .ant{position:absolute;top:-54px;width:4px;height:54px;background:linear-gradient(to top,#2a0a5e,#7a4abe);border-radius:2px;}
+  .ant::after{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan),0 0 22px rgba(0,245,255,.5);}
+  .ant-l{left:20%;transform:rotate(-17deg);transform-origin:bottom center;}
+  .ant-r{right:20%;transform:rotate(17deg);transform-origin:bottom center;}
+
+  .bezel{background:#000;border-radius:12px;padding:5px;border:2px solid #120022;position:relative;overflow:hidden;}
+  .bezel::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08) 0%, rgba(255,255,255,0.01) 40%, transparent 50%);pointer-events:none;z-index:15;border-radius:10px;}
+  .bezel::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.2) 3px,rgba(0,0,0,.2) 4px);pointer-events:none;z-index:16;border-radius:10px;}
+
+  .screen{position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:8px;overflow:hidden; transform-origin: center center;}
+  
+  .crt-off { animation: turn-off 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+  @keyframes turn-off {
+    0% { transform: scale(1, 1); filter: brightness(1); }
+    40% { transform: scale(1, 0.005); filter: brightness(5); }
+    70% { transform: scale(1, 0.005); filter: brightness(10); }
+    100% { transform: scale(0, 0.005); filter: brightness(0); }
+  }
+
+  #videoWrapper { position:absolute; inset:0; width:100%; height:100%; z-index:1; background:#000;}
+  #videoWrapper video { width:100%; height:100%; border:none; border-radius:8px; object-fit: contain; filter: contrast(1.1) saturate(1.1); pointer-events: none;}
+
+  .static-overlay {
+    position:absolute; inset:0; z-index:10; background-color: #000; opacity: 0; pointer-events: none; transition: opacity 0.1s;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E");
+    animation:sn .1s steps(1) infinite;
+  }
+  .tuning .static-overlay { opacity: 1; }
+
+  #staticScreen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;z-index:5;background:#000;border-radius:8px;}
+  .static-noise{position:absolute;inset:0;border-radius:8px;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");opacity:.28;animation:sn .075s steps(1) infinite;}
+  @keyframes sn{0%{background-position:0 0;}25%{background-position:22px -15px;}50%{background-position:-10px 32px;}75%{background-position:38px 7px;}100%{background-position:-25px -28px;}}
+  
+  .static-logo{position:relative;z-index:2;font-family:'Orbitron',sans-serif;font-size:clamp(1.4rem,3.5vw,2.8rem);font-weight:900;color:rgba(0,245,255,.45);text-shadow:0 0 20px var(--cyan);letter-spacing:.2em;}
+  .pulse-btn{position:relative;z-index:2;font-family:'Tajawal',sans-serif;font-size:1rem;font-weight:700;padding:12px 32px;background:transparent;border:2px solid var(--cyan);color:var(--cyan);border-radius:8px;cursor:pointer;text-shadow:0 0 8px var(--cyan);animation:pulse 2s ease-in-out infinite;transition:all .2s;}
+  .pulse-btn:hover{background:var(--cyan);color:#000;text-shadow:none;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 10px rgba(0,245,255,.2);}50%{box-shadow:0 0 28px rgba(0,245,255,.55),0 0 55px rgba(0,245,255,.2);}}
+
+  .tv-bottom{position:absolute;bottom:0;left:0;right:0;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-top:1px solid rgba(255,255,255,.04);}
+  .tv-brand{font-family:'Orbitron',sans-serif;font-size:.55rem;font-weight:900;letter-spacing:.25em;color:rgba(0,245,255,.25);}
+  .knobs{display:flex;align-items:center;gap:9px;}
+  .knob{width:14px;height:14px;border-radius:50%;background:#14002a;border:1.5px solid rgba(255,255,255,.1);}
+  .knob.pwr{width:20px;height:20px;border-color:var(--cyan);cursor:pointer;transition:all .2s;}
+  .knob.pwr.on{background:var(--pink);border-color:var(--pink);box-shadow:0 0 10px var(--pink),0 0 22px rgba(255,45,120,.4);}
+
+  /* Info bar */
+  .info-bar{width:100%;max-width:880px;margin-top:1.5rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;direction:ltr;}
+  .ch-badge{font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;background:var(--pink);color:#000;padding:4px 10px;border-radius:4px;box-shadow:0 0 12px var(--pink);flex-shrink:0; animation: pulseBadge 2s infinite;}
+  @keyframes pulseBadge { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+  
+  .now-bar{flex:1;background:rgba(0,245,255,.05);border:1px solid rgba(0,245,255,.15);border-radius:6px;padding:9px 14px;display:flex;align-items:center;gap:10px;min-width:0;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--pink);box-shadow:0 0 6px var(--pink);flex-shrink:0;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .on-air{font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.3);flex-shrink:0;}
+  .now-title{font-family:'Tajawal',sans-serif;font-size:.95rem;font-weight:700;color:var(--cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:rtl;}
+
+  /* Media Controls Bar */
+  .controls-bar { width:100%; max-width:880px; margin-top:1.2rem; display:flex; gap:15px; justify-content:center; direction:ltr; }
+  .ctrl-btn { font-family:'Tajawal',sans-serif; font-size:.9rem; font-weight:700; padding:10px 24px; background:rgba(0,245,255,.03); border:1px solid rgba(0,245,255,.2); color:var(--cyan); border-radius:8px; cursor:pointer; transition:all .2s; }
+  .ctrl-btn:hover:not(:disabled) { background:var(--cyan); color:#000; box-shadow:0 0 15px rgba(0,245,255,.4); }
+  .ctrl-btn:disabled { opacity:0.3; cursor:not-allowed; border-color:rgba(255,255,255,0.1); color:rgba(255,255,255,0.4); }
+
+  footer{position:relative;z-index:10;text-align:center;padding:2rem 1rem;font-family:'VT323',monospace;font-size:.9rem;color:rgba(255,255,255,.2);letter-spacing:.15em;direction:ltr;}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo-en">RETRO SPACETOON</span>
+  <span class="logo-ar">تلفاز سبيس تون الكلاسيكي — قناة شباب المستقبل</span>
+</header>
+
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span>★ SPACETOON ★ سبيس تون ★ قناة شباب المستقبل ★ كوكب أكشن ★ ACTION PLANET ★ كوكب مغامرات ★ ADVENTURE ★ كوكب كوميديا ★ COMEDY ★ كوكب أبجد ★ ABC PLANET ★ سبيس باور ★ SPACE POWER ★</span>
+    <span>★ SPACETOON ★ سبيس تون ★ قناة شباب المستقبل ★ كوكب أكشن ★ ACTION PLANET ★ كوكب مغامرات ★ ADVENTURE ★ كوكب كوميديا ★ COMEDY ★ كوكب أبجد ★ ABC PLANET ★ سبيس باور ★ SPACE POWER ★</span>
+  </div>
+</div>
+
+<div class="page">
+  <div class="tv-shell">
+    <div class="tv-body">
+      <div class="ant ant-l"></div>
+      <div class="ant ant-r"></div>
+      <div class="bezel">
+        <div class="screen" id="screen">
+          <div class="static-overlay"></div>
+          <div id="videoWrapper"></div>
+          <div id="staticScreen">
+            <div class="static-noise"></div>
+            <div class="static-logo">RETRO SPACETOON</div>
+            <button class="pulse-btn" id="startBtn">▶ تشغيل البث الحي 📡</button>
+          </div>
+        </div>
+      </div>
+      <div class="tv-bottom">
+        <span class="tv-brand">SPACETOON · LIVE</span>
+        <div class="knobs">
+          <div class="knob"></div>
+          <div class="knob"></div>
+          <div class="knob pwr" id="pwrBtn" title="إطفاء / تشغيل التلفاز"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="ch-badge" id="liveBadge">📡 LIVE TV</div>
+    <div class="now-bar">
+      <div class="dot"></div>
+      <span class="on-air">NOW PLAYING</span>
+      <span class="now-title" id="nowTitle">...</span>
+    </div>
+  </div>
+
+  <!-- أزرار التحكم بالفيديو -->
+  <div class="controls-bar">
+    <button class="ctrl-btn" id="prevBtn" disabled>⏮ المقطع السابق</button>
+    <button class="ctrl-btn" id="nextBtn" disabled>المقطع التالي ⏭</button>
+  </div>
+
+</div>
+
+<footer>RETRO SPACETOON TV · 2000–2013 · ALL RIGHTS RESERVED</footer>
+
+<script>
+let channels =[];
+let isOn = false;
+let videoPlayer = null;
+let tuneTimeout = null;
+
+// History System
+let broadcastHistory =[];
+let historyIndex = -1;
+
+const screenEl = document.getElementById('screen');
+const videoWrapper = document.getElementById('videoWrapper');
+const titleEl = document.getElementById('nowTitle');
+const liveBadge = document.getElementById('liveBadge');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+// ─── Live TV State Machine ───
+let tvState = 'off'; 
+let adsToPlay = 0;
+let adsPlayed = 0;
+
+// ─── Smart Archive Categorizer ───
+function analyzeType(rawName) {
+    const name = rawName.toLowerCase();
+    if (name.match(/well be back|will be back|نهاية|سنعود|فاصل/)) return 'outro';
+    if (name.match(/welcome back|افتتاحية|بداية|عدنا/)) return 'intro';
+    if (name.match(/شارة|اغنية|أغنية|نشيد|يا طيبه|سلامي|intro song/)) return 'song';
+    if (name.match(/اعلان|إعلان|promo|كوكب/)) return 'ad';
+    if (name.match(/حلقة|الحلقة|مشهد|جزء|فلم|فيلم|هورس لاند|زورو|مغامرات|اكشن|زمردة|كوميديا|رياضة/)) return 'episode';
+    return 'episode';
+}
+
+function safeDecode(str) {
+    try { return decodeURIComponent(str); } catch(e) { return str; }
+}
+function safeEncode(str) {
+    return str.split('/').map(encodeURIComponent).join('/');
+}
+
+// ─── Fetch Channels ───
+async function initLibrary() {
+    let saved = localStorage.getItem('retro_spacetoon_v2');
+    if (saved) {
+        channels = JSON.parse(saved);
+        titleEl.textContent = 'اضغط تشغيل للبدء بالبث الحي';
+        return;
+    }
+
+    titleEl.textContent = 'جاري استيراد المقاطع لتهيئة البث... الرجاء الانتظار';
+    try {
+        const res = await fetch('https://archive.org/metadata/20210811_20210811_2250');
+        const data = await res.json();
+        const files = data.files.filter(f => f.name.endsWith('.mp4'));
+        const identifier = data.metadata.identifier;
+
+        channels = files.map((f, index) => {
+            let rawName = safeDecode(f.name).replace('.mp4', '').replace(/_/g, ' ');
+            return {
+                id: 'arc_' + index,
+                name: rawName,
+                src: `https://archive.org/download/${identifier}/${safeEncode(f.name)}`,
+                internalType: analyzeType(rawName)
+            };
+        });
+        
+        localStorage.setItem('retro_spacetoon_v2', JSON.stringify(channels));
+        titleEl.textContent = `مستعدون! تم تهيئة البث بـ ${channels.length} مقطع.`;
+    } catch(err) {
+        console.error(err);
+        titleEl.textContent = 'فشل الاتصال بالأرشيف، الرجاء التأكد من الإنترنت.';
+    }
+}
+
+// ─── TV Director (Auto Next Logic) ───
+function playNextInSchedule() {
+    if(!isOn) return;
+    
+    let nextType = 'episode';
+
+    if (tvState === 'off') {
+        nextType = 'intro';
+        tvState = 'intro';
+    } else if (tvState === 'intro') {
+        nextType = 'episode';
+        tvState = 'episode';
+    } else if (tvState === 'episode') {
+        nextType = 'outro';
+        tvState = 'outro';
+        adsToPlay = Math.floor(Math.random() * 2) + 1; 
+        adsPlayed = 0;
+    } else if (tvState === 'outro' || tvState === 'ads') {
+        if (adsPlayed < adsToPlay) {
+            nextType = Math.random() > 0.5 ? 'ad' : 'song';
+            tvState = 'ads';
+            adsPlayed++;
+        } else {
+            nextType = 'intro';
+            tvState = 'intro';
+        }
+    } else {
+        nextType = 'intro';
+        tvState = 'intro';
+    }
+
+    let pool = channels.filter(c => c.internalType === nextType);
+    if (pool.length === 0) pool = channels.filter(c => c.internalType === 'episode');
+    if (pool.length === 0) pool = channels;
+
+    if (pool.length > 0) {
+        const randomPick = pool[Math.floor(Math.random() * pool.length)];
+        play(randomPick.id);
+    }
+}
+
+// ─── Build Video Player ───
+function makeVideoPlayer(ch) {
+  const v = document.createElement('video');
+  v.src = ch.src;
+  v.autoplay = true; 
+  v.loop = false; 
+  v.controls = false;
+  v.playsInline = true;
+  
+  // بدلاً من استدعاء الجدول فوراً، نطلب تشغيل المقطع "التالي"
+  v.addEventListener('ended', handleNextClick);
+  return v;
+}
+
+// ─── Play logic with History ───
+function play(id, isHistoryNav = false) {
+  const ch = channels.find(c => c.id === id);
+  if (!ch) return;
+
+  // تسجيل المقطع في التاريخ إذا لم يكن عودة للوراء
+  if (!isHistoryNav) {
+      // إزالة المستقبل إذا تفرعنا
+      broadcastHistory.splice(historyIndex + 1);
+      broadcastHistory.push({
+          id: ch.id,
+          state: tvState,
+          adsToPlay: adsToPlay,
+          adsPlayed: adsPlayed
+      });
+      historyIndex++;
+  }
+
+  updateButtonsState();
+
+  liveBadge.textContent = '📡 LIVE TV';
+  liveBadge.style.background = '#ff2d78';
+
+  screenEl.classList.remove('crt-off');
+  screenEl.classList.add('tuning');
+  
+  document.getElementById('staticScreen').style.display = 'none';
+  document.getElementById('pwrBtn').classList.add('on');
+  isOn = true;
+  titleEl.textContent = ch.name;
+
+  clearTimeout(tuneTimeout);
+  tuneTimeout = setTimeout(() => {
+    if (videoPlayer) { videoPlayer.pause(); videoPlayer.remove(); videoPlayer = null; }
+    videoPlayer = makeVideoPlayer(ch);
+    videoWrapper.appendChild(videoPlayer);
+    setTimeout(() => { screenEl.classList.remove('tuning'); }, 200);
+  }, 400); 
+}
+
+function turnOff() {
+  clearTimeout(tuneTimeout);
+  screenEl.classList.add('crt-off');
+  
+  setTimeout(() => {
+    if (videoPlayer) { videoPlayer.pause(); videoPlayer.remove(); videoPlayer = null; }
+    document.getElementById('staticScreen').style.display = 'flex';
+    titleEl.textContent = 'التلفاز مغلق';
+    document.getElementById('pwrBtn').classList.remove('on');
+    isOn = false;
+    updateButtonsState();
+  }, 600);
+}
+
+// ─── Nav Buttons Logic ───
+function updateButtonsState() {
+    if (!isOn) {
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+    } else {
+        prevBtn.disabled = historyIndex <= 0;
+        nextBtn.disabled = false; // دائماً متاح لأنه يولد مقطع جديد
+    }
+}
+
+function handleNextClick() {
+    if (!isOn) return;
+    if (historyIndex < broadcastHistory.length - 1) {
+        // إذا كنا قد عدنا للوراء، نقرأ المستقبل من الذاكرة
+        historyIndex++;
+        let step = broadcastHistory[historyIndex];
+        tvState = step.state;
+        adsToPlay = step.adsToPlay;
+        adsPlayed = step.adsPlayed;
+        play(step.id, true);
+    } else {
+        // توليد مقطع جديد بالجدول الذكي
+        playNextInSchedule();
+    }
+}
+
+function handlePrevClick() {
+    if (!isOn || historyIndex <= 0) return;
+    historyIndex--;
+    let step = broadcastHistory[historyIndex];
+    tvState = step.state;
+    adsToPlay = step.adsToPlay;
+    adsPlayed = step.adsPlayed;
+    play(step.id, true);
+}
+
+nextBtn.addEventListener('click', handleNextClick);
+prevBtn.addEventListener('click', handlePrevClick);
+
+// ─── Power & Start Buttons ───
+function toggleTV() {
+  if (channels.length === 0) return;
+  if (isOn) {
+      turnOff();
+  } else {
+      screenEl.classList.remove('crt-off');
+      isOn = true;
+      if (historyIndex === -1) {
+          tvState = 'off';
+          playNextInSchedule();
+      } else {
+          // إكمال البث من حيث توقف
+          let step = broadcastHistory[historyIndex];
+          tvState = step.state;
+          adsToPlay = step.adsToPlay;
+          adsPlayed = step.adsPlayed;
+          play(step.id, true);
+      }
+  }
+}
+
+document.getElementById('pwrBtn').addEventListener('click', toggleTV);
+document.getElementById('startBtn').addEventListener('click', toggleTV);
+
+// ─── Start ───
+initLibrary();
+</script>
+</body>
+</html>
